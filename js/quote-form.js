@@ -202,7 +202,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const text = val('rental_text').toUpperCase();
     const chars = countChars(text);
     const subtotal = chars * price;
-    const grandTotal = subtotal + 50;
 
     document.getElementById('revStyle').textContent = style + ' Letters';
     document.getElementById('revLetters').textContent = text;
@@ -242,8 +241,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('revRetrievalDateTime').textContent =
       fmtDate(val('retrieval_date')) + ' at ' + fmtTime(val('retrieval_time'));
 
+    const tax = Math.round(subtotal * 0.07 * 100) / 100;
+    const ccFee = Math.round((subtotal + tax + 50) * 0.035 * 100) / 100;
+    const grandTotal2 = subtotal + tax + ccFee + 50;
+
     document.getElementById('revEstTotal').textContent = '$' + subtotal.toLocaleString();
-    document.getElementById('revGrandTotal').textContent = '$' + grandTotal.toLocaleString();
+    document.getElementById('revTax').textContent = '$' + tax.toFixed(2);
+    document.getElementById('revCCFee').textContent = '$' + ccFee.toFixed(2);
+    document.getElementById('revGrandTotal').textContent = '$' + grandTotal2.toFixed(2);
 
     // Build a summary for the hidden field (so the email is readable)
     const summary = `
@@ -269,9 +274,15 @@ DELIVERY: ${deliveryEl ? deliveryEl.value : ''}
 Delivery: ${fmtDate(val('delivery_date'))} at ${fmtTime(val('delivery_time'))}
 Retrieval: ${fmtDate(val('retrieval_date'))} at ${fmtTime(val('retrieval_time'))}
 
-ESTIMATED TOTAL: $${subtotal}
-+ Refundable Deposit: $50
-TOTAL TO PAY: $${grandTotal}
+*** THIS IS AN ESTIMATE ONLY - NOT A FINAL PRICE ***
+
+Rental Subtotal: $${subtotal}
+Est. Tax (7%): $${tax.toFixed(2)}
+Est. CC Fee (3.5%): $${ccFee.toFixed(2)}
+Refundable Deposit: $50
+ESTIMATED TOTAL: $${grandTotal2.toFixed(2)}
+
+NOTE: Final price may vary. Invoice with payment link will be sent for confirmation.
     `.trim();
 
     document.getElementById('orderSummary').value = summary;

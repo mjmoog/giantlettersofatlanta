@@ -353,12 +353,15 @@
 
           <div class="review-total">
             <h3>&#9989; Ready to Submit</h3>
-            <p class="review-terms">By submitting this order, you agree to our rental terms and conditions. We'll contact you shortly to confirm your booking, verify the exact delivery distance and cost, and collect payment.</p>
-            <p><strong>Estimated Payment:</strong></p>
-            <div class="review-row"><span class="label">Estimated total:</span> <span class="value" id="revEstTotal"></span></div>
+            <p style="background: #FFF0F0; border: 2px solid #e74c3c; border-radius: 8px; padding: 12px 16px; font-weight: 700; text-align: center; color: #e74c3c; margin-bottom: 16px;">THIS IS AN ESTIMATE ONLY &mdash; NOT A FINAL PRICE</p>
+            <p class="review-terms">This is an estimated quote for your review. After you submit, we will verify all details including delivery distance, availability, and any additional fees. <strong>You will receive an invoice with a secure payment link for the final confirmed price.</strong> No payment is collected at this time.</p>
+            <p><strong>Estimated Pricing Breakdown:</strong></p>
+            <div class="review-row"><span class="label">Rental subtotal:</span> <span class="value" id="revEstTotal"></span></div>
+            <div class="review-row"><span class="label">Est. tax (7%):</span> <span class="value" id="revTax"></span></div>
+            <div class="review-row"><span class="label">Est. CC processing fee (3.5%):</span> <span class="value" id="revCCFee"></span></div>
             <div class="review-row"><span class="label">Refundable deposit:</span> <span class="value">$50.00 (returned after event)</span></div>
-            <div class="review-row" style="font-size: 1.1rem;"><span class="label" style="color: var(--gold-dark);">Estimated total to pay:</span> <span class="value total-price" id="revGrandTotal"></span></div>
-            <p class="deposit-note mt-2">* Final delivery fee will be confirmed based on exact distance from our Woodstock, GA location</p>
+            <div class="review-row" style="font-size: 1.1rem; border-top: 2px solid var(--gold); padding-top: 12px; margin-top: 8px;"><span class="label" style="color: var(--gold-dark); font-weight: 700;">Estimated Total:</span> <span class="value total-price" id="revGrandTotal"></span></div>
+            <p class="deposit-note mt-2">* Final price may vary based on delivery distance from our Woodstock, GA location, availability, and applicable taxes. An invoice with a payment link will be sent for final confirmation.</p>
           </div>
 
           <!-- Hidden field for formatted summary -->
