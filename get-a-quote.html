@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Get a Quote - Giant Letters of Atlanta</title>
+  <meta name="description" content="Request a free quote for giant marquee letter rentals in Atlanta. Simple 6-step form to get your custom rental pricing.">
+  <link rel="icon" href="images/logo.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <nav class="nav">
+      <a href="index.html" class="nav-logo">
+        <img src="images/logo.png" alt="Giant Letters of Atlanta Logo">
+        <span>Giant Letters of Atlanta</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="our-story.html">Our Story</a></li>
+        <li><a href="rental-info.html">Rental Info</a></li>
+        <li><a href="blog/index.html">Blog</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="get-a-quote.html" class="btn btn-primary active">Get a Quote</a></li>
+      </ul>
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="container">
+      <h1>Get a Quote</h1>
+      <p>Fill out the form below and we'll get back to you with your rental details</p>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <section class="section">
+    <div class="container">
+      <form id="quoteForm" class="form-wizard" action="https://formspree.io/f/mqeggebj" method="POST">
+
+        <!-- Steps Indicator -->
+        <div class="steps-indicator">
+          <div class="step-dot active" data-step="1">
+            <div class="dot">1</div>
+            <span class="step-label">Contact</span>
+          </div>
+          <div class="step-dot" data-step="2">
+            <div class="dot">2</div>
+            <span class="step-label">Rental</span>
+          </div>
+          <div class="step-dot" data-step="3">
+            <div class="dot">3</div>
+            <span class="step-label">Event</span>
+          </div>
+          <div class="step-dot" data-step="4">
+            <div class="dot">4</div>
+            <span class="step-label">Setup</span>
+          </div>
+          <div class="step-dot" data-step="5">
+            <div class="dot">5</div>
+            <span class="step-label">Delivery</span>
+          </div>
+          <div class="step-dot" data-step="6">
+            <div class="dot">6</div>
+            <span class="step-label">Review</span>
+          </div>
+        </div>
+
+        <!-- Step 1: Contact Information -->
+        <div class="form-step active" data-step="1">
+          <h2>Contact Information</h2>
+          <p class="section-subtitle">Let's start with your contact details</p>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>First Name <span class="required">*</span></label>
+              <input type="text" name="first_name" required placeholder="First">
+              <p class="error-msg">Please enter your first name</p>
+            </div>
+            <div class="form-group">
+              <label>Last Name <span class="required">*</span></label>
+              <input type="text" name="last_name" required placeholder="Last">
+              <p class="error-msg">Please enter your last name</p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Email <span class="required">*</span></label>
+            <input type="email" name="email" required placeholder="you@example.com">
+            <p class="error-msg">Please enter a valid email</p>
+          </div>
+
+          <div class="form-group">
+            <label>Phone Number <span class="required">*</span></label>
+            <input type="tel" name="phone" required placeholder="(555) 123-4567">
+            <p class="hint">Best number to call and text you</p>
+            <p class="error-msg">Please enter your phone number</p>
+          </div>
+
+          <div class="form-group">
+            <div class="checkbox-group">
+              <input type="checkbox" name="sms_consent" id="smsConsent" required>
+              <label for="smsConsent">I consent to receive SMS from Giant Letters of Atlanta <span class="required">*</span><br>
+                <small style="color: var(--gray);">Message and data rates may apply. Reply STOP to unsubscribe.</small>
+              </label>
+            </div>
+            <p class="error-msg">SMS consent is required</p>
+          </div>
+
+          <div class="form-group">
+            <label>Instagram Handle (Optional)</label>
+            <input type="text" name="instagram" placeholder="@yourusername">
+          </div>
+
+          <div class="form-nav">
+            <a href="index.html" class="btn btn-back">Cancel</a>
+            <button type="button" class="btn btn-primary btn-next">Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 2: What Would You Like to Rent? -->
+        <div class="form-step" data-step="2">
+          <h2>What Would You Like to Rent?</h2>
+          <p class="section-subtitle">Choose your letter style and tell us what you need</p>
+
+          <div class="form-group">
+            <label>Select Letter Style: 2D or 3D <span class="required">*</span></label>
+            <div class="radio-cards">
+              <label class="radio-card" data-price="60">
+                <input type="radio" name="letter_style" value="2D" required>
+                <h4>2D Letters</h4>
+                <p>3 feet tall flat design</p>
+                <div class="price-tag">$60 each</div>
+              </label>
+              <label class="radio-card selected" data-price="75">
+                <input type="radio" name="letter_style" value="3D" checked>
+                <h4>3D Letters</h4>
+                <p>3 feet tall illuminated design</p>
+                <div class="price-tag">$75 each</div>
+              </label>
+            </div>
+            <p class="error-msg">Please select a letter style</p>
+          </div>
+
+          <div class="form-group">
+            <label>Letters or Numbers <span class="required">*</span></label>
+            <textarea name="rental_text" id="rentalText" required placeholder="Type what you'd like to display (e.g., LOVE, DANCE, 2024)"></textarea>
+            <p class="hint">$<span id="pricePerChar">75</span> per character. Please double-check spelling!</p>
+            <p class="error-msg">Please enter the letters or numbers you'd like to rent</p>
+          </div>
+
+          <div class="rental-preview" id="rentalPreview" style="display:none;">
+            <h4>&#10024; Your Rental</h4>
+            <div class="preview-text" id="previewText"></div>
+            <div class="preview-price"><span id="charCount">0</span> <span id="styleLabel">3D</span> characters &times; $<span id="previewPricePerChar">75</span> = <strong>$<span id="previewTotal">0</span></strong></div>
+          </div>
+
+          <div class="rental-examples">
+            <p>Examples for 3D letters:</p>
+            <ul>
+              <li>LOVE = $300</li>
+              <li>M&amp;G = $225</li>
+              <li>2024 = $300</li>
+            </ul>
+          </div>
+
+          <div class="form-nav">
+            <button type="button" class="btn btn-back btn-prev">Back</button>
+            <button type="button" class="btn btn-primary btn-next">Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Event Details -->
+        <div class="form-step" data-step="3">
+          <h2>Event Details</h2>
+          <p class="section-subtitle">Tell us about your special event</p>
+
+          <div class="form-group">
+            <label>Event Date <span class="required">*</span></label>
+            <input type="date" name="event_date" required>
+            <p class="error-msg">Please select an event date</p>
+          </div>
+
+          <div class="form-group">
+            <label>Event Time <span class="required">*</span></label>
+            <input type="time" name="event_time" required>
+            <p class="hint">What time does your event begin?</p>
+            <p class="error-msg">Please enter the event time</p>
+          </div>
+
+          <div class="form-group">
+            <label>Event Venue Name <span class="required">*</span></label>
+            <input type="text" name="venue_name" required placeholder="e.g., Ball Room, Grand Hall">
+            <p class="error-msg">Please enter the venue name</p>
+          </div>
+
+          <div class="form-group">
+            <label>Onsite Contact Person <span class="required">*</span></label>
+            <input type="text" name="onsite_contact" required placeholder="Name and phone number at the event location">
+            <p class="hint">Name and phone number at the event location</p>
+            <p class="error-msg">Please provide an onsite contact</p>
+          </div>
+
+          <div class="form-group">
+            <label>Event Address <span class="required">*</span></label>
+            <input type="text" name="event_address" required placeholder="Complete street address including city, state, and ZIP code">
+            <p class="hint">Complete street address including city, state, and ZIP code</p>
+            <p class="error-msg">Please enter the event address</p>
+          </div>
+
+          <div class="info-box delivery">
+            &#128205; Delivery distance from our Woodstock location (129 Hillmont Dr.) will be calculated in your quote
+          </div>
+
+          <div class="form-group mt-3">
+            <label>Special Instructions (Optional)</label>
+            <textarea name="special_instructions" placeholder="Any special requests or notes for your event"></textarea>
+          </div>
+
+          <div class="form-nav">
+            <button type="button" class="btn btn-back btn-prev">Back</button>
+            <button type="button" class="btn btn-primary btn-next">Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 4: Setup Details -->
+        <div class="form-step" data-step="4">
+          <h2>Setup Details</h2>
+          <p class="section-subtitle">Where will the letters be displayed?</p>
+
+          <div class="form-group">
+            <label>Setup Location <span class="required">*</span></label>
+            <div class="radio-cards">
+              <label class="radio-card selected">
+                <input type="radio" name="setup_location" value="Indoor" checked required>
+                <h4>&#127968; Indoor Event</h4>
+                <p>Letters will be displayed inside</p>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="setup_location" value="Outdoor">
+                <h4>&#127774; Outdoor Event</h4>
+                <p>Letters will be displayed outside</p>
+              </label>
+            </div>
+          </div>
+
+          <p style="color: var(--gray); font-size: 0.9rem;">We provide blocks and stakes for outdoor events to secure letters from wind damage</p>
+
+          <div class="form-nav">
+            <button type="button" class="btn btn-back btn-prev">Back</button>
+            <button type="button" class="btn btn-primary btn-next">Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 5: Delivery Options -->
+        <div class="form-step" data-step="5">
+          <h2>Delivery Options</h2>
+          <p class="section-subtitle">How would you like to receive your rental?</p>
+
+          <div class="form-group">
+            <label>Delivery Method <span class="required">*</span></label>
+            <div class="radio-cards">
+              <label class="radio-card selected">
+                <input type="radio" name="delivery_method" value="Delivery" checked required>
+                <h4>&#128666; Delivery</h4>
+                <p>We deliver and set up letters from Woodstock, GA. Pick up and setup included.</p>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="delivery_method" value="Pickup">
+                <h4>&#128663; Pick Up</h4>
+                <p>Pick up from our Woodstock location. You handle setup.</p>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Delivery Date <span class="required">*</span></label>
+              <input type="date" name="delivery_date" required>
+              <p class="error-msg">Please select a delivery date</p>
+            </div>
+            <div class="form-group">
+              <label>Delivery Time <span class="required">*</span></label>
+              <input type="time" name="delivery_time" required>
+              <p class="error-msg">Please select a delivery time</p>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Retrieval Date <span class="required">*</span></label>
+              <input type="date" name="retrieval_date" required>
+              <p class="error-msg">Please select a retrieval date</p>
+            </div>
+            <div class="form-group">
+              <label>Retrieval Time <span class="required">*</span></label>
+              <input type="time" name="retrieval_time" required>
+              <p class="error-msg">Please select a retrieval time</p>
+            </div>
+          </div>
+
+          <div class="form-nav">
+            <button type="button" class="btn btn-back btn-prev">Back</button>
+            <button type="button" class="btn btn-primary btn-next">Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 6: Review Your Order -->
+        <div class="form-step" data-step="6">
+          <h2>Review Your Order</h2>
+          <p class="section-subtitle">Please verify all details before submitting</p>
+
+          <div class="review-section">
+            <h3>Contact Information</h3>
+            <div class="review-row"><span class="label">Name:</span> <span class="value" id="revName"></span></div>
+            <div class="review-row"><span class="label">Email:</span> <span class="value" id="revEmail"></span></div>
+            <div class="review-row"><span class="label">Phone:</span> <span class="value" id="revPhone"></span></div>
+            <div class="review-row"><span class="label">Instagram:</span> <span class="value" id="revInstagram"></span></div>
+          </div>
+
+          <div class="review-section">
+            <h3>Rental Details</h3>
+            <div class="review-row"><span class="label">Style:</span> <span class="value" id="revStyle"></span></div>
+            <div class="review-row"><span class="label">Letters/Numbers:</span> <span class="value" id="revLetters"></span></div>
+            <div class="review-row"><span class="label">Price per character:</span> <span class="value" id="revPricePerChar"></span></div>
+            <div class="review-row"><span class="label">Character count:</span> <span class="value" id="revCharCount"></span></div>
+          </div>
+
+          <div class="review-section">
+            <h3>Event Details</h3>
+            <div class="review-row"><span class="label">Date &amp; Time:</span> <span class="value" id="revEventDateTime"></span></div>
+            <div class="review-row"><span class="label">Venue:</span> <span class="value" id="revVenue"></span></div>
+            <div class="review-row"><span class="label">Address:</span> <span class="value" id="revAddress"></span></div>
+            <div class="review-row"><span class="label">Onsite Contact:</span> <span class="value" id="revContact"></span></div>
+            <div class="review-row"><span class="label">Special Instructions:</span> <span class="value" id="revInstructions"></span></div>
+          </div>
+
+          <div class="review-section">
+            <h3>Setup &amp; Delivery</h3>
+            <div class="review-row"><span class="label">Setup Location:</span> <span class="value" id="revSetup"></span></div>
+            <div class="review-row"><span class="label">Delivery Method:</span> <span class="value" id="revDeliveryMethod"></span></div>
+            <div class="review-row"><span class="label">Delivery Date &amp; Time:</span> <span class="value" id="revDeliveryDateTime"></span></div>
+            <div class="review-row"><span class="label">Retrieval Date &amp; Time:</span> <span class="value" id="revRetrievalDateTime"></span></div>
+          </div>
+
+          <div class="review-total">
+            <h3>&#9989; Ready to Submit</h3>
+            <p class="review-terms">By submitting this order, you agree to our rental terms and conditions. We'll contact you shortly to confirm your booking, verify the exact delivery distance and cost, and collect payment.</p>
+            <p><strong>Estimated Payment:</strong></p>
+            <div class="review-row"><span class="label">Estimated total:</span> <span class="value" id="revEstTotal"></span></div>
+            <div class="review-row"><span class="label">Refundable deposit:</span> <span class="value">$50.00 (returned after event)</span></div>
+            <div class="review-row" style="font-size: 1.1rem;"><span class="label" style="color: var(--gold-dark);">Estimated total to pay:</span> <span class="value total-price" id="revGrandTotal"></span></div>
+            <p class="deposit-note mt-2">* Final delivery fee will be confirmed based on exact distance from our Woodstock, GA location</p>
+          </div>
+
+          <!-- Hidden field for formatted summary -->
+          <input type="hidden" name="order_summary" id="orderSummary">
+
+          <div class="form-nav">
+            <button type="button" class="btn btn-back btn-prev">Back</button>
+            <button type="submit" class="btn btn-primary">Submit Order</button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="images/logo.png" alt="Giant Letters of Atlanta">
+          <p>Premier marquee letter & number rental company in Atlanta. We brighten your events with 5ft tall illuminated characters and the best customer service.</p>
+          <div class="social-links">
+            <a href="https://www.facebook.com/GiantLettersOfAtlanta/" target="_blank" aria-label="Facebook">f</a>
+            <a href="https://www.instagram.com/giantlettersofatlanta/" target="_blank" aria-label="Instagram">&#9744;</a>
+            <a href="https://www.tiktok.com/@giantlettersofatlanta" target="_blank" aria-label="TikTok">&#9835;</a>
+            <a href="https://www.pinterest.com/giantlettersofatlanta/" target="_blank" aria-label="Pinterest">P</a>
+            <a href="https://www.youtube.com/@GiantLettersofAtlanta" target="_blank" aria-label="YouTube">&#9654;</a>
+          </div>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="our-story.html">Our Story</a></li>
+            <li><a href="rental-info.html">Rental Info</a></li>
+            <li><a href="get-a-quote.html">Get a Quote</a></li>
+            <li><a href="blog/index.html">Blog</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contact Us</h4>
+          <ul class="footer-links">
+            <li><a href="tel:+14048069959">(404) 806-9959</a></li>
+            <li><a href="mailto:giantlettersofatlanta@gmail.com">giantlettersofatlanta@gmail.com</a></li>
+            <li><a href="contact.html">Contact Page</a></li>
+            <li><a href="resources.html">Resources</a></li>
+            <li><a href="privacy-policy.html">Privacy Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 Giant Letters of Atlanta. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/quote-form.js"></script>
+</body>
+</html>
