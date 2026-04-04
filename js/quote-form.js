@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
       fmtDate(val('retrieval_date')) + ' at ' + fmtTime(val('retrieval_time'));
 
     const deposit = deliveryEl && deliveryEl.value === 'Pickup' ? 100 : 50;
-    const tax = Math.round(subtotal * 0.07 * 100) / 100;
+    const tax = Math.round(subtotal * 0.098 * 100) / 100;
     const ccFee = Math.round((subtotal + tax + deposit) * 0.035 * 100) / 100;
     const grandTotal2 = subtotal + tax + ccFee + deposit;
 
@@ -279,7 +279,7 @@ Retrieval: ${fmtDate(val('retrieval_date'))} at ${fmtTime(val('retrieval_time'))
 *** THIS IS AN ESTIMATE ONLY - NOT A FINAL PRICE ***
 
 Rental Subtotal: $${subtotal}
-Est. Tax (7%): $${tax.toFixed(2)}
+Est. Tax (9.8%): $${tax.toFixed(2)}
 Est. CC Fee (3.5%): $${ccFee.toFixed(2)}
 Refundable Deposit: $${deposit} (${deliveryEl && deliveryEl.value === 'Pickup' ? 'Pickup' : 'Delivery'})
 ESTIMATED TOTAL: $${grandTotal2.toFixed(2)}
