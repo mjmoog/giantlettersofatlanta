@@ -290,17 +290,48 @@ NOTE: Final price may vary. Invoice with payment link will be sent for confirmat
     document.getElementById('orderSummary').value = summary;
   }
 
-  // --- Form Submit ---
+  // --- Form Submit via AJAX ---
   form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
     // Add email subject line
     let subject = form.querySelector('input[name="_subject"]');
     if (!subject) {
       subject = document.createElement('input');
       subject.type = 'hidden';
       subject.name = '_subject';
-      const name = form.querySelector('[name="first_name"]').value + ' ' + form.querySelector('[name="last_name"]').value;
-      subject.value = 'New Rental Request from ' + name;
       form.appendChild(subject);
     }
+    const name = form.querySelector('[name="first_name"]').value + ' ' + form.querySelector('[name="last_name"]').value;
+    subject.value = 'New Rental Request from ' + name;
+
+    // Disable submit button
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+      method: 'POST',
+      body: formData,
+      headers: { 'Accept': 'application/json' }
+    })
+    .then(response => {
+      if (response.ok) {
+        window.location.href = 'index.html';
+      } else {
+        return response.json().then(data => {
+          alert('There was a problem submitting your request. Please try again or call us at (404) 806-9959.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit Order';
+        });
+      }
+    })
+    .catch(error => {
+      alert('There was a problem submitting your request. Please try again or call us at (404) 806-9959.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Order';
+    });
   });
 });
