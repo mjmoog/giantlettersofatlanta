@@ -257,17 +257,6 @@ TOTAL TO PAY: $${grandTotal}
 
   // --- Form Submit ---
   form.addEventListener('submit', (e) => {
-    // Add redirect input for Formspree
-    let redirect = form.querySelector('input[name="_next"]');
-    if (!redirect) {
-      redirect = document.createElement('input');
-      redirect.type = 'hidden';
-      redirect.name = '_next';
-      const base = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
-      redirect.value = base + '/thank-you.html';
-      form.appendChild(redirect);
-    }
-
     // Add email subject line
     let subject = form.querySelector('input[name="_subject"]');
     if (!subject) {
