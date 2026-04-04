@@ -257,18 +257,26 @@ TOTAL TO PAY: $${grandTotal}
 
   // --- Form Submit ---
   form.addEventListener('submit', (e) => {
-    // Let Formspree handle the submission
-    // Redirect to thank you page after submission
-    // Formspree handles the submission
-
     // Add redirect input for Formspree
     let redirect = form.querySelector('input[name="_next"]');
     if (!redirect) {
       redirect = document.createElement('input');
       redirect.type = 'hidden';
       redirect.name = '_next';
-      redirect.value = window.location.origin + '/thank-you.html';
+      const base = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
+      redirect.value = base + '/thank-you.html';
       form.appendChild(redirect);
+    }
+
+    // Add email subject line
+    let subject = form.querySelector('input[name="_subject"]');
+    if (!subject) {
+      subject = document.createElement('input');
+      subject.type = 'hidden';
+      subject.name = '_subject';
+      const name = form.querySelector('[name="first_name"]').value + ' ' + form.querySelector('[name="last_name"]').value;
+      subject.value = 'New Rental Request from ' + name;
+      form.appendChild(subject);
     }
   });
 });
