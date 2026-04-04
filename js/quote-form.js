@@ -85,6 +85,28 @@ document.addEventListener('DOMContentLoaded', () => {
       valid = false;
     }
 
+    // Retrieval must be after delivery (step 5)
+    if (step === 5) {
+      const dDate = form.querySelector('[name="delivery_date"]').value;
+      const dTime = form.querySelector('[name="delivery_time"]').value;
+      const rDate = form.querySelector('[name="retrieval_date"]').value;
+      const rTime = form.querySelector('[name="retrieval_time"]').value;
+
+      if (dDate && dTime && rDate && rTime) {
+        const delivery = new Date(dDate + 'T' + dTime);
+        const retrieval = new Date(rDate + 'T' + rTime);
+        if (retrieval <= delivery) {
+          const rDateGroup = form.querySelector('[name="retrieval_date"]').closest('.form-group');
+          const rTimeGroup = form.querySelector('[name="retrieval_time"]').closest('.form-group');
+          rDateGroup.classList.add('error');
+          rTimeGroup.classList.add('error');
+          rDateGroup.querySelector('.error-msg').textContent = 'Retrieval must be after delivery date & time';
+          rTimeGroup.querySelector('.error-msg').textContent = 'Retrieval must be after delivery date & time';
+          valid = false;
+        }
+      }
+    }
+
     return valid;
   }
 
