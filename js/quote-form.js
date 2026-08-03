@@ -526,7 +526,7 @@ NOTE: Availability and submitted details will be reviewed. An invoice with a sec
       if (!response.ok) throw new Error(`Formspree HTTP ${response.status}`);
 
       await createBooqableDraft();
-      window.location.href = 'index.html';
+      window.location.href = 'thank-you.html';
     } catch (error) {
       alert('There was a problem submitting your request. Please try again or call us at (404) 806-9959.');
       submitButton.disabled = false;
