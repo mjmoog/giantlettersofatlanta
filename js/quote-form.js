@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const rentalPreview = document.getElementById('rentalPreview');
   const addressInput = form.querySelector('[name="event_address"]');
   const distanceStatus = document.getElementById('deliveryDistanceStatus');
+  const distanceMessage = document.getElementById('deliveryDistanceMessage');
   const submissionId = createSubmissionId();
   let currentStep = 1;
   let distanceTimer = null;
@@ -289,25 +290,25 @@ document.addEventListener('DOMContentLoaded', () => {
     distanceStatus.className = `delivery-distance-status ${distanceState.status}`;
     switch (distanceState.status) {
       case 'pickup':
-        distanceStatus.textContent = 'Pickup selected: no delivery mileage fee applies.';
+        distanceMessage.textContent = 'Pickup selected: no delivery mileage fee applies.';
         break;
       case 'loading':
-        distanceStatus.textContent = 'Calculating round-trip driving distance and delivery fee...';
+        distanceMessage.textContent = 'Calculating round-trip driving distance and delivery fee...';
         break;
       case 'available': {
         const result = distanceState.data;
-        distanceStatus.textContent = `${result.resolved_address} \u2022 ${result.round_trip_miles.toFixed(2)} round-trip miles \u2022 ${result.tier_name} \u2022 ${money(result.tier_price_cents)}`;
+        distanceMessage.textContent = `${result.resolved_address} \u2022 ${result.round_trip_miles.toFixed(2)} round-trip miles \u2022 ${result.tier_name} \u2022 ${money(result.tier_price_cents)}`;
         break;
       }
       case 'out_of_range':
-        distanceStatus.textContent = `This address is ${distanceState.data.round_trip_miles.toFixed(2)} round-trip miles away and is outside our 80-mile service area. Please choose pickup or call (404) 806-9959.`;
+        distanceMessage.textContent = `This address is ${distanceState.data.round_trip_miles.toFixed(2)} round-trip miles away and is outside our 80-mile service area. Please choose pickup or call (404) 806-9959.`;
         break;
       case 'error':
       case 'unavailable':
-        distanceStatus.textContent = `${distanceState.message} You can still continue and submit your request.`;
+        distanceMessage.textContent = `${distanceState.message} You can still continue and submit your request.`;
         break;
       default:
-        distanceStatus.textContent = 'Enter the complete event address to calculate delivery.';
+        distanceMessage.textContent = 'Enter the complete event address to calculate delivery.';
     }
     updateLivePricing();
   }
