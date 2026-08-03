@@ -58,15 +58,15 @@
           </div>
           <div class="step-dot" data-step="3">
             <div class="dot">3</div>
-            <span class="step-label">Event</span>
+            <span class="step-label">Delivery</span>
           </div>
           <div class="step-dot" data-step="4">
             <div class="dot">4</div>
-            <span class="step-label">Setup</span>
+            <span class="step-label">Event</span>
           </div>
           <div class="step-dot" data-step="5">
             <div class="dot">5</div>
-            <span class="step-label">Delivery</span>
+            <span class="step-label">Setup</span>
           </div>
           <div class="step-dot" data-step="6">
             <div class="dot">6</div>
@@ -152,15 +152,16 @@
 
           <div class="form-group">
             <label>Letters or Numbers <span class="required">*</span></label>
-            <textarea name="rental_text" id="rentalText" required placeholder="Type what you'd like to display (e.g., LOVE, DANCE, 2024)"></textarea>
-            <p class="hint">$<span id="pricePerChar">75</span> per character. Please double-check spelling!</p>
+            <textarea name="rental_text" id="rentalText" required maxlength="30" placeholder="Type what you'd like to display (e.g., LOVE, DANCE, 2024)"></textarea>
+            <p class="hint"><span id="pricePerChar">$75 per character; 3D K, ? and # are $90</span>. Spaces are free. Please double-check spelling!</p>
             <p class="error-msg">Please enter the letters or numbers you'd like to rent</p>
           </div>
 
           <div class="rental-preview" id="rentalPreview" style="display:none;">
             <h4>&#10024; Your Rental</h4>
             <div class="preview-text" id="previewText"></div>
-            <div class="preview-price"><span id="charCount">0</span> <span id="styleLabel">3D</span> characters &times; $<span id="previewPricePerChar">75</span> = <strong>$<span id="previewTotal">0</span></strong></div>
+            <div class="preview-price"><span id="charCount">0</span> <span id="styleLabel">3D</span> characters = <strong>$<span id="previewTotal">0.00</span></strong></div>
+            <p class="hint" id="previewPriceNote">Based on each character's Booqable price.</p>
           </div>
 
           <div class="rental-examples">
@@ -178,8 +179,82 @@
           </div>
         </div>
 
-        <!-- Step 3: Event Details -->
+        <!-- Step 3: Delivery Options and Address -->
         <div class="form-step" data-step="3">
+          <h2>Delivery Options</h2>
+          <p class="section-subtitle">Choose delivery or pickup and see your live estimate</p>
+
+          <div class="form-group">
+            <label>Delivery Method <span class="required">*</span></label>
+            <div class="radio-cards">
+              <label class="radio-card selected">
+                <input type="radio" name="delivery_method" value="Delivery" checked required>
+                <h4>&#128666; Delivery</h4>
+                <p>We deliver, set up, and return after the event. Includes a $50 refundable deposit plus a round-trip mileage fee.</p>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="delivery_method" value="Pickup">
+                <h4>&#128663; Pick Up</h4>
+                <p>Pick up and return at our Woodstock location. Includes a $100 refundable deposit and no delivery fee.</p>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group" id="deliveryAddressGroup">
+            <label>Event / Delivery Address <span class="required">*</span></label>
+            <input type="text" name="event_address" required autocomplete="street-address" placeholder="Complete street address, city, state, and ZIP code">
+            <p class="hint">Delivery mileage is calculated round trip from 129 Hillmont Dr., Woodstock, GA.</p>
+            <p class="error-msg">Please enter the complete event address</p>
+          </div>
+
+          <div class="delivery-distance-status" id="deliveryDistanceStatus" role="status" aria-live="polite">
+            Enter the complete event address to calculate delivery.
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Delivery / Pickup Date <span class="required">*</span></label>
+              <input type="date" name="delivery_date" required>
+              <p class="error-msg">Please select a delivery or pickup date</p>
+            </div>
+            <div class="form-group">
+              <label>Delivery / Pickup Time <span class="required">*</span></label>
+              <input type="time" name="delivery_time" required>
+              <p class="error-msg">Please select a delivery or pickup time</p>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Retrieval / Return Date <span class="required">*</span></label>
+              <input type="date" name="retrieval_date" required>
+              <p class="error-msg">Please select a retrieval or return date</p>
+            </div>
+            <div class="form-group">
+              <label>Retrieval / Return Time <span class="required">*</span></label>
+              <input type="time" name="retrieval_time" required>
+              <p class="error-msg">Please select a retrieval or return time</p>
+            </div>
+          </div>
+
+          <div class="live-pricing" id="livePricing" aria-live="polite">
+            <h3>Live Estimate</h3>
+            <div class="review-row"><span class="label">Rental subtotal:</span> <span class="value" id="liveSubtotal">$0.00</span></div>
+            <div class="review-row"><span class="label">Delivery fee:</span> <span class="value" id="liveDelivery">To be confirmed</span></div>
+            <div class="review-row"><span class="label">Est. tax (8.9%):</span> <span class="value" id="liveTax">To be confirmed</span></div>
+            <div class="review-row"><span class="label">Est. card fee (3.5%):</span> <span class="value" id="liveCCFee">To be confirmed</span></div>
+            <div class="review-row"><span class="label">Refundable deposit:</span> <span class="value" id="liveDeposit">$50.00</span></div>
+            <div class="review-row live-total"><span class="label">Estimated total:</span> <span class="value" id="liveGrandTotal">To be confirmed</span></div>
+          </div>
+
+          <div class="form-nav">
+            <button type="button" class="btn btn-back btn-prev">Back</button>
+            <button type="button" class="btn btn-primary btn-next">Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 4: Event Details -->
+        <div class="form-step" data-step="4">
           <h2>Event Details</h2>
           <p class="section-subtitle">Tell us about your special event</p>
 
@@ -198,7 +273,7 @@
 
           <div class="form-group">
             <label>Event Venue Name <span class="required">*</span></label>
-            <input type="text" name="venue_name" required placeholder="e.g., Ball Room, Grand Hall">
+            <input type="text" name="venue_name" required placeholder="e.g., Ballroom, Grand Hall">
             <p class="error-msg">Please enter the venue name</p>
           </div>
 
@@ -210,19 +285,8 @@
           </div>
 
           <div class="form-group">
-            <label>Event Address <span class="required">*</span></label>
-            <input type="text" name="event_address" required placeholder="Complete street address including city, state, and ZIP code">
-            <p class="hint">Complete street address including city, state, and ZIP code</p>
-            <p class="error-msg">Please enter the event address</p>
-          </div>
-
-          <div class="info-box delivery">
-            &#128205; Delivery distance from our Woodstock location (129 Hillmont Dr.) will be calculated in your quote
-          </div>
-
-          <div class="form-group mt-3">
             <label>Special Instructions (Optional)</label>
-            <textarea name="special_instructions" placeholder="Any special requests or notes for your event"></textarea>
+            <textarea name="special_instructions" maxlength="1000" placeholder="Any special requests or notes for your event"></textarea>
           </div>
 
           <div class="form-nav">
@@ -231,8 +295,8 @@
           </div>
         </div>
 
-        <!-- Step 4: Setup Details -->
-        <div class="form-step" data-step="4">
+        <!-- Step 5: Setup Details -->
+        <div class="form-step" data-step="5">
           <h2>Setup Details</h2>
           <p class="section-subtitle">Where will the letters be displayed?</p>
 
@@ -252,60 +316,7 @@
             </div>
           </div>
 
-          <p style="color: var(--gray); font-size: 0.9rem;">We provide blocks and stakes for outdoor events to secure letters from wind damage</p>
-
-          <div class="form-nav">
-            <button type="button" class="btn btn-back btn-prev">Back</button>
-            <button type="button" class="btn btn-primary btn-next">Continue</button>
-          </div>
-        </div>
-
-        <!-- Step 5: Delivery Options -->
-        <div class="form-step" data-step="5">
-          <h2>Delivery Options</h2>
-          <p class="section-subtitle">How would you like to receive your rental?</p>
-
-          <div class="form-group">
-            <label>Delivery Method <span class="required">*</span></label>
-            <div class="radio-cards">
-              <label class="radio-card selected">
-                <input type="radio" name="delivery_method" value="Delivery" checked required>
-                <h4>&#128666; Delivery</h4>
-                <p>We deliver and set up letters and return after event to retrieve. There is a $50 deposit and delivery fee is based on distance from Woodstock, GA.</p>
-              </label>
-              <label class="radio-card">
-                <input type="radio" name="delivery_method" value="Pickup">
-                <h4>&#128663; Pick Up</h4>
-                <p>Pick up from our Woodstock location. You handle set up and returns. $100 deposit required.</p>
-              </label>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Delivery Date <span class="required">*</span></label>
-              <input type="date" name="delivery_date" required>
-              <p class="error-msg">Please select a delivery date</p>
-            </div>
-            <div class="form-group">
-              <label>Delivery Time <span class="required">*</span></label>
-              <input type="time" name="delivery_time" required>
-              <p class="error-msg">Please select a delivery time</p>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Retrieval Date <span class="required">*</span></label>
-              <input type="date" name="retrieval_date" required>
-              <p class="error-msg">Please select a retrieval date</p>
-            </div>
-            <div class="form-group">
-              <label>Retrieval Time <span class="required">*</span></label>
-              <input type="time" name="retrieval_time" required>
-              <p class="error-msg">Please select a retrieval time</p>
-            </div>
-          </div>
+          <p style="color: var(--gray); font-size: 0.9rem;">We provide blocks and stakes for outdoor events to secure letters from wind damage.</p>
 
           <div class="form-nav">
             <button type="button" class="btn btn-back btn-prev">Back</button>
@@ -330,7 +341,7 @@
             <h3>Rental Details</h3>
             <div class="review-row"><span class="label">Style:</span> <span class="value" id="revStyle"></span></div>
             <div class="review-row"><span class="label">Letters/Numbers:</span> <span class="value" id="revLetters"></span></div>
-            <div class="review-row"><span class="label">Price per character:</span> <span class="value" id="revPricePerChar"></span></div>
+            <div class="review-row"><span class="label">Character pricing:</span> <span class="value" id="revPricePerChar"></span></div>
             <div class="review-row"><span class="label">Character count:</span> <span class="value" id="revCharCount"></span></div>
           </div>
 
@@ -347,6 +358,9 @@
             <h3>Setup &amp; Delivery</h3>
             <div class="review-row"><span class="label">Setup Location:</span> <span class="value" id="revSetup"></span></div>
             <div class="review-row"><span class="label">Delivery Method:</span> <span class="value" id="revDeliveryMethod"></span></div>
+            <div class="review-row"><span class="label">Resolved Address:</span> <span class="value" id="revResolvedAddress"></span></div>
+            <div class="review-row"><span class="label">Round-trip Mileage:</span> <span class="value" id="revMileage"></span></div>
+            <div class="review-row"><span class="label">Delivery Tier:</span> <span class="value" id="revDeliveryTier"></span></div>
             <div class="review-row"><span class="label">Delivery Date &amp; Time:</span> <span class="value" id="revDeliveryDateTime"></span></div>
             <div class="review-row"><span class="label">Retrieval Date &amp; Time:</span> <span class="value" id="revRetrievalDateTime"></span></div>
           </div>
@@ -357,11 +371,12 @@
             <p class="review-terms">This is an estimated quote for your review. After you submit, we will verify all details including delivery distance, availability, and any additional fees. <strong>You will receive an invoice with a secure payment link for the final confirmed price.</strong> No payment is collected at this time.</p>
             <p><strong>Estimated Pricing Breakdown:</strong></p>
             <div class="review-row"><span class="label">Rental subtotal:</span> <span class="value" id="revEstTotal"></span></div>
+            <div class="review-row"><span class="label">Delivery fee:</span> <span class="value" id="revDeliveryFee"></span></div>
             <div class="review-row"><span class="label">Est. tax (8.9%):</span> <span class="value" id="revTax"></span></div>
             <div class="review-row"><span class="label">Est. CC processing fee (3.5%):</span> <span class="value" id="revCCFee"></span></div>
             <div class="review-row"><span class="label">Refundable deposit:</span> <span class="value" id="revDeposit"></span></div>
             <div class="review-row" style="font-size: 1.1rem; border-top: 2px solid var(--gold); padding-top: 12px; margin-top: 8px;"><span class="label" style="color: var(--gold-dark); font-weight: 700;">Estimated Total:</span> <span class="value total-price" id="revGrandTotal"></span></div>
-            <p class="deposit-note mt-2">* Final price may vary based on delivery distance from our Woodstock, GA location, availability, and applicable taxes. An invoice with a payment link will be sent for final confirmation.</p>
+            <p class="deposit-note mt-2">* Availability and submitted details will be reviewed before a final invoice is issued. If live delivery pricing is unavailable, the delivery fee and total will be confirmed manually.</p>
           </div>
 
           <!-- Hidden field for formatted summary -->
