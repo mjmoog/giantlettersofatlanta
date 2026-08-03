@@ -782,6 +782,18 @@ h3 { font-size: clamp(1.2rem, 2.5vw, 1.75rem); }
   font-weight: 600;
 }
 
+.google-maps-attribution {
+  color: #5e5e5e;
+  display: block;
+  font-family: Roboto, sans-serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: normal;
+  margin-top: 8px;
+  white-space: nowrap;
+}
+
 .live-pricing {
   background: linear-gradient(135deg, #FFF9E6, #FFF3CC);
   border: 2px solid var(--gold);
