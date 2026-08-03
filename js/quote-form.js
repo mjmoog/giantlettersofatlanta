@@ -4,57 +4,65 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('quoteForm');
   if (!form) return;
 
-  let currentStep = 1;
+  const API_BASE_URL = 'https://gloa-api.vercel.app';
   const totalSteps = 6;
+  const rentalText = document.getElementById('rentalText');
+  const rentalPreview = document.getElementById('rentalPreview');
+  const addressInput = form.querySelector('[name="event_address"]');
+  const distanceStatus = document.getElementById('deliveryDistanceStatus');
+  const submissionId = createSubmissionId();
+  let currentStep = 1;
+  let distanceTimer = null;
+  let distanceRequestId = 0;
+  let distanceState = { status: 'idle' };
+
+  function createSubmissionId() {
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (character) => {
+      const random = window.crypto.getRandomValues(new Uint8Array(1))[0] & 15;
+      const value = character === 'x' ? random : (random & 3) | 8;
+      return value.toString(16);
+    });
+  }
 
   // --- Step Navigation ---
   function showStep(step) {
-    document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
-    document.querySelector(`.form-step[data-step="${step}"]`).classList.add('active');
+    form.querySelectorAll('.form-step').forEach((element) => element.classList.remove('active'));
+    form.querySelector(`.form-step[data-step="${step}"]`).classList.add('active');
 
-    document.querySelectorAll('.step-dot').forEach(dot => {
-      const s = parseInt(dot.dataset.step);
+    form.querySelectorAll('.step-dot').forEach((dot) => {
+      const dotStep = Number.parseInt(dot.dataset.step, 10);
       dot.classList.remove('active', 'completed');
-      if (s === step) dot.classList.add('active');
-      else if (s < step) dot.classList.add('completed');
+      if (dotStep === step) dot.classList.add('active');
+      else if (dotStep < step) dot.classList.add('completed');
     });
 
-    // Update completed dots to show checkmark
-    document.querySelectorAll('.step-dot.completed .dot').forEach(dot => {
-      dot.textContent = '\u2713';
-    });
-    document.querySelectorAll('.step-dot:not(.completed) .dot').forEach(dot => {
+    form.querySelectorAll('.step-dot.completed .dot').forEach((dot) => { dot.textContent = '\u2713'; });
+    form.querySelectorAll('.step-dot:not(.completed) .dot').forEach((dot) => {
       dot.textContent = dot.closest('.step-dot').dataset.step;
     });
 
-    window.scrollTo({ top: document.querySelector('.form-wizard').offsetTop - 100, behavior: 'smooth' });
     currentStep = step;
+    if (step === totalSteps) populateReview();
+    window.scrollTo({ top: form.offsetTop - 100, behavior: 'smooth' });
   }
 
-  // Next buttons
-  form.querySelectorAll('.btn-next').forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (validateStep(currentStep)) {
-        if (currentStep === 5) populateReview();
-        showStep(currentStep + 1);
-      }
+  form.querySelectorAll('.btn-next').forEach((button) => {
+    button.addEventListener('click', () => {
+      if (validateStep(currentStep)) showStep(currentStep + 1);
     });
   });
 
-  // Back buttons
-  form.querySelectorAll('.btn-prev').forEach(btn => {
-    btn.addEventListener('click', () => {
-      showStep(currentStep - 1);
-    });
+  form.querySelectorAll('.btn-prev').forEach((button) => {
+    button.addEventListener('click', () => showStep(currentStep - 1));
   });
 
   // --- Validation ---
   function validateStep(step) {
-    const stepEl = document.querySelector(`.form-step[data-step="${step}"]`);
-    const required = stepEl.querySelectorAll('[required]');
+    const stepElement = form.querySelector(`.form-step[data-step="${step}"]`);
     let valid = true;
 
-    required.forEach(input => {
+    stepElement.querySelectorAll('[required]').forEach((input) => {
       const group = input.closest('.form-group') || input.closest('.checkbox-group')?.parentElement;
       if (!group) return;
 
@@ -62,14 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
         group.classList.add('error');
         valid = false;
       } else if (input.type === 'radio') {
-        const name = input.name;
-        const checked = stepEl.querySelector(`input[name="${name}"]:checked`);
-        if (!checked) {
-          group.classList.add('error');
-          valid = false;
-        } else {
-          group.classList.remove('error');
-        }
+        const checked = stepElement.querySelector(`input[name="${input.name}"]:checked`);
+        group.classList.toggle('error', !checked);
+        if (!checked) valid = false;
       } else if (!input.value.trim()) {
         group.classList.add('error');
         valid = false;
@@ -78,30 +81,41 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Email validation
-    const emailInput = stepEl.querySelector('input[type="email"]');
+    const emailInput = stepElement.querySelector('input[type="email"]');
     if (emailInput && emailInput.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value)) {
       emailInput.closest('.form-group').classList.add('error');
       valid = false;
     }
 
-    // Retrieval must be after delivery (step 5)
-    if (step === 5) {
-      const dDate = form.querySelector('[name="delivery_date"]').value;
-      const dTime = form.querySelector('[name="delivery_time"]').value;
-      const rDate = form.querySelector('[name="retrieval_date"]').value;
-      const rTime = form.querySelector('[name="retrieval_time"]').value;
+    if (step === 2) {
+      const textGroup = rentalText.closest('.form-group');
+      const characters = getRentalCharacters(rentalText.value);
+      const supported = /^[A-Z0-9&#?\s]+$/i.test(rentalText.value)
+        && !(getStyle() === '2D' && characters.includes('#'));
+      if (!supported || characters.length > 24) {
+        textGroup.classList.add('error');
+        textGroup.querySelector('.error-msg').textContent = supported
+          ? 'Please limit your rental to 24 non-space characters'
+          : 'Please use a character available in the selected style (2D hashtag is unavailable)';
+        valid = false;
+      }
+    }
 
-      if (dDate && dTime && rDate && rTime) {
-        const delivery = new Date(dDate + 'T' + dTime);
-        const retrieval = new Date(rDate + 'T' + rTime);
+    if (step === 3) {
+      const deliveryDate = valueOf('delivery_date');
+      const deliveryTime = valueOf('delivery_time');
+      const retrievalDate = valueOf('retrieval_date');
+      const retrievalTime = valueOf('retrieval_time');
+      if (deliveryDate && deliveryTime && retrievalDate && retrievalTime) {
+        const delivery = new Date(`${deliveryDate}T${deliveryTime}`);
+        const retrieval = new Date(`${retrievalDate}T${retrievalTime}`);
         if (retrieval <= delivery) {
-          const rDateGroup = form.querySelector('[name="retrieval_date"]').closest('.form-group');
-          const rTimeGroup = form.querySelector('[name="retrieval_time"]').closest('.form-group');
-          rDateGroup.classList.add('error');
-          rTimeGroup.classList.add('error');
-          rDateGroup.querySelector('.error-msg').textContent = 'Retrieval must be after delivery date & time';
-          rTimeGroup.querySelector('.error-msg').textContent = 'Retrieval must be after delivery date & time';
+          const dateGroup = form.querySelector('[name="retrieval_date"]').closest('.form-group');
+          const timeGroup = form.querySelector('[name="retrieval_time"]').closest('.form-group');
+          dateGroup.classList.add('error');
+          timeGroup.classList.add('error');
+          dateGroup.querySelector('.error-msg').textContent = 'Retrieval must be after delivery date and time';
+          timeGroup.querySelector('.error-msg').textContent = 'Retrieval must be after delivery date and time';
           valid = false;
         }
       }
@@ -110,191 +124,385 @@ document.addEventListener('DOMContentLoaded', () => {
     return valid;
   }
 
-  // Clear error on input
-  form.addEventListener('input', (e) => {
-    const group = e.target.closest('.form-group');
+  form.addEventListener('input', (event) => {
+    const group = event.target.closest('.form-group');
+    if (group) group.classList.remove('error');
+  });
+  form.addEventListener('change', (event) => {
+    const group = event.target.closest('.form-group');
     if (group) group.classList.remove('error');
   });
 
-  form.addEventListener('change', (e) => {
-    const group = e.target.closest('.form-group');
-    if (group) group.classList.remove('error');
-  });
-
-  // --- Radio Card Selection ---
-  form.querySelectorAll('.radio-card').forEach(card => {
+  // --- Radio Cards ---
+  form.querySelectorAll('.radio-card').forEach((card) => {
     card.addEventListener('click', () => {
+      const input = card.querySelector('input[type="radio"]');
       const parent = card.closest('.form-group') || card.closest('.radio-cards').parentElement;
-      parent.querySelectorAll('.radio-card').forEach(c => c.classList.remove('selected'));
+      parent.querySelectorAll('.radio-card').forEach((option) => option.classList.remove('selected'));
       card.classList.add('selected');
-      card.querySelector('input[type="radio"]').checked = true;
+      input.checked = true;
 
-      // Update price if this is the letter style selector
-      if (card.dataset.price) {
-        updatePrice();
-      }
+      if (input.name === 'letter_style') updatePrice();
+      if (input.name === 'delivery_method') handleDeliveryMethodChange();
     });
   });
 
-  // --- Live Price Calculator ---
-  const rentalText = document.getElementById('rentalText');
-  const rentalPreview = document.getElementById('rentalPreview');
-
-  if (rentalText) {
-    rentalText.addEventListener('input', updatePrice);
-  }
-
-  function getPrice() {
-    const selected = form.querySelector('input[name="letter_style"]:checked');
-    return selected && selected.value === '2D' ? 60 : 75;
-  }
-
+  // --- Catalog-backed Pricing ---
   function getStyle() {
-    const selected = form.querySelector('input[name="letter_style"]:checked');
-    return selected ? selected.value : '3D';
+    return form.querySelector('input[name="letter_style"]:checked')?.value || '3D';
   }
 
-  function countChars(text) {
-    // Count non-space characters
-    return text.replace(/\s/g, '').length;
+  function getDeliveryMethod() {
+    return form.querySelector('input[name="delivery_method"]:checked')?.value || 'Delivery';
+  }
+
+  function getRentalCharacters(text) {
+    return [...text.toUpperCase()].filter((character) => !/\s/.test(character));
+  }
+
+  function characterPriceCents(style, character) {
+    if (style === '2D') return 6000;
+    return ['K', '?', '#'].includes(character.toUpperCase()) ? 9000 : 7500;
+  }
+
+  function rentalSubtotalCents() {
+    const style = getStyle();
+    return getRentalCharacters(rentalText.value).reduce(
+      (total, character) => total + characterPriceCents(style, character),
+      0
+    );
+  }
+
+  function calculatePricing() {
+    const deliveryMethod = getDeliveryMethod();
+    const lettersSubtotalCents = rentalSubtotalCents();
+    const deliveryComplete = deliveryMethod === 'Pickup' || distanceState.status === 'available';
+    const deliveryCents = deliveryMethod === 'Pickup' ? 0 : (distanceState.data?.tier_price_cents || 0);
+    const depositCents = deliveryMethod === 'Pickup' ? 10000 : 5000;
+
+    if (!deliveryComplete) {
+      return { complete: false, lettersSubtotalCents, deliveryCents: null, taxCents: null, cardFeeCents: null, depositCents, grandTotalCents: null };
+    }
+
+    const taxableCents = lettersSubtotalCents + deliveryCents;
+    const taxCents = Math.round(taxableCents * 0.089);
+    const cardFeeCents = Math.round((taxableCents + taxCents) * 0.035);
+    return {
+      complete: true,
+      lettersSubtotalCents,
+      deliveryCents,
+      taxCents,
+      cardFeeCents,
+      depositCents,
+      grandTotalCents: taxableCents + taxCents + cardFeeCents + depositCents
+    };
+  }
+
+  function money(cents) {
+    return `$${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
 
   function updatePrice() {
-    const text = rentalText ? rentalText.value.toUpperCase() : '';
-    const price = getPrice();
+    const text = rentalText.value.toUpperCase();
     const style = getStyle();
-    const chars = countChars(text);
-    const total = chars * price;
+    const characters = getRentalCharacters(text);
+    const subtotalCents = rentalSubtotalCents();
+    document.getElementById('pricePerChar').textContent = style === '2D'
+      ? '$60 per character'
+      : '$75 per character; 3D K, ? and # are $90';
 
-    // Update hints
-    const pricePerCharEl = document.getElementById('pricePerChar');
-    if (pricePerCharEl) pricePerCharEl.textContent = price;
+    if (characters.length > 0) {
+      rentalPreview.style.display = 'block';
+      document.getElementById('previewText').textContent = text;
+      document.getElementById('charCount').textContent = characters.length;
+      document.getElementById('styleLabel').textContent = style;
+      document.getElementById('previewTotal').textContent = (subtotalCents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('previewPriceNote').textContent = style === '3D' && characters.some((character) => ['K', '?', '#'].includes(character))
+        ? 'Includes Booqable pricing of $90.00 for each 3D K, question mark, and hashtag; other 3D characters are $75.00.'
+        : 'Based on each character\'s current Booqable price; spaces are free.';
+    } else {
+      rentalPreview.style.display = 'none';
+    }
+    updateLivePricing();
+  }
 
-    // Update preview
-    if (rentalPreview) {
-      if (chars > 0) {
-        rentalPreview.style.display = 'block';
-        document.getElementById('previewText').textContent = text;
-        document.getElementById('charCount').textContent = chars;
-        document.getElementById('styleLabel').textContent = style;
-        document.getElementById('previewPricePerChar').textContent = price;
-        document.getElementById('previewTotal').textContent = total.toLocaleString();
-      } else {
-        rentalPreview.style.display = 'none';
-      }
+  rentalText.addEventListener('input', updatePrice);
+
+  // --- Delivery Distance ---
+  function handleDeliveryMethodChange() {
+    distanceRequestId += 1;
+    window.clearTimeout(distanceTimer);
+    if (getDeliveryMethod() === 'Pickup') {
+      distanceState = { status: 'pickup' };
+      renderDistanceState();
+    } else {
+      scheduleDistanceLookup();
     }
   }
 
-  // --- Populate Review ---
+  function scheduleDistanceLookup() {
+    window.clearTimeout(distanceTimer);
+    const address = addressInput.value.trim();
+    if (getDeliveryMethod() !== 'Delivery') return;
+    if (address.length < 8) {
+      distanceState = { status: 'idle' };
+      renderDistanceState();
+      return;
+    }
+
+    distanceState = { status: 'loading' };
+    renderDistanceState();
+    distanceTimer = window.setTimeout(() => lookupDistance(address), 650);
+  }
+
+  async function lookupDistance(address) {
+    const requestId = ++distanceRequestId;
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/distance`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address })
+      });
+      const body = await response.json().catch(() => ({}));
+      if (requestId !== distanceRequestId || address !== addressInput.value.trim()) return;
+
+      if (response.ok && body.ok) {
+        distanceState = body.out_of_range
+          ? { status: 'out_of_range', data: body }
+          : { status: 'available', data: body };
+      } else if (body.error?.code === 'distance_service_unconfigured') {
+        distanceState = { status: 'unavailable', message: body.error.message };
+      } else {
+        distanceState = {
+          status: 'error',
+          message: body.error?.message || 'We could not verify this address. Delivery pricing will be confirmed after submission.'
+        };
+      }
+    } catch (error) {
+      if (requestId !== distanceRequestId) return;
+      distanceState = { status: 'unavailable', message: 'Live delivery pricing is temporarily unavailable and will be confirmed after submission.' };
+    }
+    renderDistanceState();
+  }
+
+  function renderDistanceState() {
+    distanceStatus.className = `delivery-distance-status ${distanceState.status}`;
+    switch (distanceState.status) {
+      case 'pickup':
+        distanceStatus.textContent = 'Pickup selected: no delivery mileage fee applies.';
+        break;
+      case 'loading':
+        distanceStatus.textContent = 'Calculating round-trip driving distance and delivery fee...';
+        break;
+      case 'available': {
+        const result = distanceState.data;
+        distanceStatus.textContent = `${result.resolved_address} \u2022 ${result.round_trip_miles.toFixed(2)} round-trip miles \u2022 ${result.tier_name} \u2022 ${money(result.tier_price_cents)}`;
+        break;
+      }
+      case 'out_of_range':
+        distanceStatus.textContent = `This address is ${distanceState.data.round_trip_miles.toFixed(2)} round-trip miles away and is outside our 80-mile service area. Please choose pickup or call (404) 806-9959.`;
+        break;
+      case 'error':
+      case 'unavailable':
+        distanceStatus.textContent = `${distanceState.message} You can still continue and submit your request.`;
+        break;
+      default:
+        distanceStatus.textContent = 'Enter the complete event address to calculate delivery.';
+    }
+    updateLivePricing();
+  }
+
+  addressInput.addEventListener('input', scheduleDistanceLookup);
+
+  function deliveryDisplay(pricing) {
+    if (getDeliveryMethod() === 'Pickup') return '$0.00';
+    if (distanceState.status === 'out_of_range') return 'Outside service area';
+    return pricing.complete ? money(pricing.deliveryCents) : 'To be confirmed';
+  }
+
+  function updateLivePricing() {
+    const pricing = calculatePricing();
+    document.getElementById('liveSubtotal').textContent = money(pricing.lettersSubtotalCents);
+    document.getElementById('liveDelivery').textContent = deliveryDisplay(pricing);
+    document.getElementById('liveTax').textContent = pricing.complete ? money(pricing.taxCents) : 'To be confirmed';
+    document.getElementById('liveCCFee').textContent = pricing.complete ? money(pricing.cardFeeCents) : 'To be confirmed';
+    document.getElementById('liveDeposit').textContent = money(pricing.depositCents);
+    document.getElementById('liveGrandTotal').textContent = pricing.complete ? money(pricing.grandTotalCents) : 'To be confirmed';
+  }
+
+  // --- Review and Formspree Summary ---
+  function valueOf(name) {
+    return form.querySelector(`[name="${name}"]`)?.value || '';
+  }
+
+  function formatDate(dateString) {
+    if (!dateString) return '';
+    return new Date(`${dateString}T00:00:00`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  }
+
+  function formatTime(timeString) {
+    if (!timeString) return '';
+    const [hours, minutes] = timeString.split(':');
+    const hour = Number.parseInt(hours, 10);
+    return `${hour % 12 || 12}:${minutes} ${hour >= 12 ? 'PM' : 'AM'}`;
+  }
+
+  function distanceReview() {
+    if (getDeliveryMethod() === 'Pickup') return { resolved: 'Not applicable for pickup', mileage: 'Not applicable', tier: 'No delivery fee' };
+    if (distanceState.status === 'available') {
+      return {
+        resolved: distanceState.data.resolved_address,
+        mileage: `${distanceState.data.round_trip_miles.toFixed(2)} miles round trip`,
+        tier: distanceState.data.tier_name
+      };
+    }
+    if (distanceState.status === 'out_of_range') {
+      return {
+        resolved: distanceState.data.resolved_address,
+        mileage: `${distanceState.data.round_trip_miles.toFixed(2)} miles round trip`,
+        tier: 'Outside 80-mile service area - please call (404) 806-9959'
+      };
+    }
+    return { resolved: 'To be confirmed', mileage: 'To be confirmed', tier: 'To be confirmed' };
+  }
+
   function populateReview() {
-    const val = (name) => {
-      const el = form.querySelector(`[name="${name}"]`);
-      return el ? el.value : '';
-    };
-
-    document.getElementById('revName').textContent = val('first_name') + ' ' + val('last_name');
-    document.getElementById('revEmail').textContent = val('email');
-    document.getElementById('revPhone').textContent = val('phone');
-    document.getElementById('revInstagram').textContent = val('instagram') || 'N/A';
-
     const style = getStyle();
-    const price = getPrice();
-    const text = val('rental_text').toUpperCase();
-    const chars = countChars(text);
-    const subtotal = chars * price;
+    const text = valueOf('rental_text').toUpperCase();
+    const characters = getRentalCharacters(text);
+    const deliveryMethod = getDeliveryMethod();
+    const pricing = calculatePricing();
+    const distance = distanceReview();
+    const setup = form.querySelector('input[name="setup_location"]:checked')?.value || '';
 
-    document.getElementById('revStyle').textContent = style + ' Letters';
+    document.getElementById('revName').textContent = `${valueOf('first_name')} ${valueOf('last_name')}`;
+    document.getElementById('revEmail').textContent = valueOf('email');
+    document.getElementById('revPhone').textContent = valueOf('phone');
+    document.getElementById('revInstagram').textContent = valueOf('instagram') || 'N/A';
+    document.getElementById('revStyle').textContent = `${style} Letters`;
     document.getElementById('revLetters').textContent = text;
-    document.getElementById('revPricePerChar').textContent = '$' + price;
-    document.getElementById('revCharCount').textContent = chars;
+    document.getElementById('revPricePerChar').textContent = style === '2D' ? '$60.00 each' : '$75.00 each; 3D K, ? and # are $90.00';
+    document.getElementById('revCharCount').textContent = characters.length;
+    document.getElementById('revEventDateTime').textContent = `${formatDate(valueOf('event_date'))} at ${formatTime(valueOf('event_time'))}`;
+    document.getElementById('revVenue').textContent = valueOf('venue_name');
+    document.getElementById('revAddress').textContent = valueOf('event_address');
+    document.getElementById('revContact').textContent = valueOf('onsite_contact');
+    document.getElementById('revInstructions').textContent = valueOf('special_instructions') || 'None';
+    document.getElementById('revSetup').textContent = `${setup} Event`;
+    document.getElementById('revDeliveryMethod').textContent = deliveryMethod;
+    document.getElementById('revResolvedAddress').textContent = distance.resolved;
+    document.getElementById('revMileage').textContent = distance.mileage;
+    document.getElementById('revDeliveryTier').textContent = distance.tier;
+    document.getElementById('revDeliveryDateTime').textContent = `${formatDate(valueOf('delivery_date'))} at ${formatTime(valueOf('delivery_time'))}`;
+    document.getElementById('revRetrievalDateTime').textContent = `${formatDate(valueOf('retrieval_date'))} at ${formatTime(valueOf('retrieval_time'))}`;
+    document.getElementById('revEstTotal').textContent = money(pricing.lettersSubtotalCents);
+    document.getElementById('revDeliveryFee').textContent = deliveryDisplay(pricing);
+    document.getElementById('revTax').textContent = pricing.complete ? money(pricing.taxCents) : 'To be confirmed';
+    document.getElementById('revCCFee').textContent = pricing.complete ? money(pricing.cardFeeCents) : 'To be confirmed';
+    document.getElementById('revDeposit').textContent = `${money(pricing.depositCents)} (returned after event)`;
+    document.getElementById('revGrandTotal').textContent = pricing.complete ? money(pricing.grandTotalCents) : 'To be confirmed';
 
-    // Format dates
-    const fmtDate = (dateStr) => {
-      if (!dateStr) return '';
-      const d = new Date(dateStr + 'T00:00:00');
-      return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-    };
-    const fmtTime = (timeStr) => {
-      if (!timeStr) return '';
-      const [h, m] = timeStr.split(':');
-      const hr = parseInt(h);
-      const ampm = hr >= 12 ? 'PM' : 'AM';
-      const hr12 = hr % 12 || 12;
-      return hr12 + ':' + m + ' ' + ampm;
-    };
-
-    document.getElementById('revEventDateTime').textContent =
-      fmtDate(val('event_date')) + ' at ' + fmtTime(val('event_time'));
-    document.getElementById('revVenue').textContent = val('venue_name');
-    document.getElementById('revAddress').textContent = val('event_address');
-    document.getElementById('revContact').textContent = val('onsite_contact');
-    document.getElementById('revInstructions').textContent = val('special_instructions') || 'None';
-
-    const setupEl = form.querySelector('input[name="setup_location"]:checked');
-    document.getElementById('revSetup').textContent = setupEl ? setupEl.value + ' Event' : '';
-
-    const deliveryEl = form.querySelector('input[name="delivery_method"]:checked');
-    document.getElementById('revDeliveryMethod').textContent = deliveryEl ? deliveryEl.value : '';
-
-    document.getElementById('revDeliveryDateTime').textContent =
-      fmtDate(val('delivery_date')) + ' at ' + fmtTime(val('delivery_time'));
-    document.getElementById('revRetrievalDateTime').textContent =
-      fmtDate(val('retrieval_date')) + ' at ' + fmtTime(val('retrieval_time'));
-
-    const deposit = deliveryEl && deliveryEl.value === 'Pickup' ? 100 : 50;
-    const tax = Math.round(subtotal * 0.089 * 100) / 100;
-    const ccFee = Math.round((subtotal + tax) * 0.035 * 100) / 100;
-    const grandTotal2 = subtotal + tax + ccFee + deposit;
-
-    document.getElementById('revEstTotal').textContent = '$' + subtotal.toLocaleString();
-    document.getElementById('revTax').textContent = '$' + tax.toFixed(2);
-    document.getElementById('revCCFee').textContent = '$' + ccFee.toFixed(2);
-    document.getElementById('revDeposit').textContent = '$' + deposit.toFixed(2) + ' (returned after event)';
-    document.getElementById('revGrandTotal').textContent = '$' + grandTotal2.toFixed(2);
-
-    // Build a summary for the hidden field (so the email is readable)
+    const summaryValue = (cents) => cents === null ? 'To be confirmed' : money(cents);
     const summary = `
 RENTAL REQUEST SUMMARY
 ======================
-Name: ${val('first_name')} ${val('last_name')}
-Email: ${val('email')}
-Phone: ${val('phone')}
-Instagram: ${val('instagram') || 'N/A'}
+Name: ${valueOf('first_name')} ${valueOf('last_name')}
+Email: ${valueOf('email')}
+Phone: ${valueOf('phone')}
+Instagram: ${valueOf('instagram') || 'N/A'}
 
 RENTAL: ${style} Letters
 Text: ${text}
-Characters: ${chars} x $${price} = $${subtotal}
+Characters: ${characters.length}
+Rental Subtotal: ${money(pricing.lettersSubtotalCents)}
+Character Pricing: ${style === '2D' ? '$60.00 each' : '$75.00 each; 3D K, ? and # are $90.00'}
 
-EVENT: ${fmtDate(val('event_date'))} at ${fmtTime(val('event_time'))}
-Venue: ${val('venue_name')}
-Address: ${val('event_address')}
-Onsite Contact: ${val('onsite_contact')}
-Special Instructions: ${val('special_instructions') || 'None'}
+EVENT: ${formatDate(valueOf('event_date'))} at ${formatTime(valueOf('event_time'))}
+Venue: ${valueOf('venue_name')}
+Submitted Address: ${valueOf('event_address')}
+Resolved Address: ${distance.resolved}
+Onsite Contact: ${valueOf('onsite_contact')}
+Special Instructions: ${valueOf('special_instructions') || 'None'}
 
-SETUP: ${setupEl ? setupEl.value : ''} Event
-DELIVERY: ${deliveryEl ? deliveryEl.value : ''}
-Delivery: ${fmtDate(val('delivery_date'))} at ${fmtTime(val('delivery_time'))}
-Retrieval: ${fmtDate(val('retrieval_date'))} at ${fmtTime(val('retrieval_time'))}
+SETUP: ${setup} Event
+DELIVERY METHOD: ${deliveryMethod}
+Delivery / Pickup: ${formatDate(valueOf('delivery_date'))} at ${formatTime(valueOf('delivery_time'))}
+Retrieval / Return: ${formatDate(valueOf('retrieval_date'))} at ${formatTime(valueOf('retrieval_time'))}
+Round-Trip Mileage: ${distance.mileage}
+Delivery Tier: ${distance.tier}
+Delivery Fee: ${deliveryDisplay(pricing)}
 
 *** THIS IS AN ESTIMATE ONLY - NOT A FINAL PRICE ***
 
-Rental Subtotal: $${subtotal}
-Est. Tax (8.9%): $${tax.toFixed(2)}
-Est. CC Fee (3.5%): $${ccFee.toFixed(2)}
-Refundable Deposit: $${deposit} (${deliveryEl && deliveryEl.value === 'Pickup' ? 'Pickup' : 'Delivery'})
-ESTIMATED TOTAL: $${grandTotal2.toFixed(2)}
+Rental Subtotal: ${money(pricing.lettersSubtotalCents)}
+Delivery Fee: ${deliveryDisplay(pricing)}
+Est. Tax (8.9%): ${summaryValue(pricing.taxCents)}
+Est. CC Fee (3.5% of subtotal + delivery + tax; excludes deposit): ${summaryValue(pricing.cardFeeCents)}
+Refundable Deposit: ${money(pricing.depositCents)} (${deliveryMethod})
+ESTIMATED TOTAL: ${summaryValue(pricing.grandTotalCents)}
 
-NOTE: Final price may vary. Invoice with payment link will be sent for confirmation.
+NOTE: Availability and submitted details will be reviewed. An invoice with a secure payment link will be sent for confirmation.
     `.trim();
-
     document.getElementById('orderSummary').value = summary;
   }
 
-  // --- Form Submit via AJAX ---
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
+  function toIso(dateName, timeName) {
+    return new Date(`${valueOf(dateName)}T${valueOf(timeName)}`).toISOString();
+  }
 
-    // Add email subject line
+  function buildQuotePayload() {
+    return {
+      submission_id: submissionId,
+      first_name: valueOf('first_name'),
+      last_name: valueOf('last_name'),
+      email: valueOf('email'),
+      phone: valueOf('phone'),
+      instagram: valueOf('instagram'),
+      rental_text: valueOf('rental_text'),
+      letter_style: getStyle(),
+      delivery_method: getDeliveryMethod(),
+      starts_at: toIso('delivery_date', 'delivery_time'),
+      stops_at: toIso('retrieval_date', 'retrieval_time'),
+      event_date: valueOf('event_date'),
+      event_time: valueOf('event_time'),
+      event_address: valueOf('event_address'),
+      venue_name: valueOf('venue_name'),
+      onsite_contact: valueOf('onsite_contact'),
+      setup_location: form.querySelector('input[name="setup_location"]:checked')?.value || '',
+      special_instructions: valueOf('special_instructions')
+    };
+  }
+
+  async function createBooqableDraft() {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 12000);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/quote`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildQuotePayload()),
+        signal: controller.signal
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        console.warn('Booqable draft was not created:', body.error?.code || response.status, body.error?.message || 'Unknown error');
+        return;
+      }
+      console.info('Booqable draft created:', body.order_number || body.order_id, 'shortage:', Boolean(body.shortage));
+    } catch (error) {
+      console.warn('Booqable draft was not created:', error.name === 'AbortError' ? 'request timed out' : error.message);
+    } finally {
+      window.clearTimeout(timeout);
+    }
+  }
+
+  // Formspree remains the customer-facing source of truth. A Booqable failure
+  // is logged for diagnosis but never turns a successful Formspree submission
+  // into a customer-visible failure.
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    populateReview();
+
     let subject = form.querySelector('input[name="_subject"]');
     if (!subject) {
       subject = document.createElement('input');
@@ -302,36 +510,32 @@ NOTE: Final price may vary. Invoice with payment link will be sent for confirmat
       subject.name = '_subject';
       form.appendChild(subject);
     }
-    const name = form.querySelector('[name="first_name"]').value + ' ' + form.querySelector('[name="last_name"]').value;
-    subject.value = 'New Rental Request from ' + name;
+    subject.value = `New Rental Request from ${valueOf('first_name')} ${valueOf('last_name')}`;
 
-    // Disable submit button
-    const submitBtn = form.querySelector('button[type="submit"]');
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Submitting...';
+    const submitButton = form.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    submitButton.textContent = 'Submitting...';
 
-    const formData = new FormData(form);
+    try {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' }
+      });
+      if (!response.ok) throw new Error(`Formspree HTTP ${response.status}`);
 
-    fetch(form.action, {
-      method: 'POST',
-      body: formData,
-      headers: { 'Accept': 'application/json' }
-    })
-    .then(response => {
-      if (response.ok) {
-        window.location.href = 'index.html';
-      } else {
-        return response.json().then(data => {
-          alert('There was a problem submitting your request. Please try again or call us at (404) 806-9959.');
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Submit Order';
-        });
-      }
-    })
-    .catch(error => {
+      await createBooqableDraft();
+      window.location.href = 'index.html';
+    } catch (error) {
       alert('There was a problem submitting your request. Please try again or call us at (404) 806-9959.');
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Submit Order';
-    });
+      submitButton.disabled = false;
+      submitButton.textContent = 'Submit Order';
+    }
   });
+
+  // Do not allow past dates in the date pickers.
+  const today = new Date().toISOString().slice(0, 10);
+  form.querySelectorAll('input[type="date"]').forEach((input) => { input.min = today; });
+  updatePrice();
+  renderDistanceState();
 });

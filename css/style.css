@@ -744,6 +744,66 @@ h3 { font-size: clamp(1.2rem, 2.5vw, 1.75rem); }
   border-left-color: #e74c3c;
 }
 
+/* Live delivery lookup and pricing */
+.delivery-distance-status {
+  background: #f5f5f5;
+  border: 2px solid var(--gray-light);
+  border-radius: 8px;
+  color: var(--gray);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: -4px 0 20px;
+  padding: 12px 16px;
+}
+
+.delivery-distance-status.loading {
+  border-color: var(--gold);
+  color: var(--gold-dark);
+}
+
+.delivery-distance-status.available,
+.delivery-distance-status.pickup {
+  background: #f0fff4;
+  border-color: #38a169;
+  color: #276749;
+}
+
+.delivery-distance-status.error,
+.delivery-distance-status.unavailable {
+  background: #fffbea;
+  border-color: #d69e2e;
+  color: #744210;
+}
+
+.delivery-distance-status.out_of_range {
+  background: #fff0f0;
+  border-color: #e74c3c;
+  color: #a12622;
+  font-weight: 600;
+}
+
+.live-pricing {
+  background: linear-gradient(135deg, #FFF9E6, #FFF3CC);
+  border: 2px solid var(--gold);
+  border-radius: var(--radius);
+  margin-top: 8px;
+  padding: 20px;
+}
+
+.live-pricing h3 {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+
+.live-pricing .live-total {
+  border-top: 2px solid var(--gold);
+  color: var(--gold-dark);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-top: 6px;
+  padding-top: 12px;
+}
+
 /* Review step */
 .review-section {
   margin-bottom: 24px;
@@ -769,6 +829,9 @@ h3 { font-size: clamp(1.2rem, 2.5vw, 1.75rem); }
 
 .review-row .value {
   font-weight: 600;
+  max-width: 58%;
+  overflow-wrap: anywhere;
+  text-align: right;
 }
 
 .review-total {
