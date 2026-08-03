@@ -187,7 +187,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const taxableCents = lettersSubtotalCents + deliveryCents;
     const taxCents = Math.round(taxableCents * 0.089);
-    const cardFeeCents = Math.round((taxableCents + taxCents) * 0.035);
+    // Booqable charges the card fee on the pre-tax subtotal, not on subtotal + tax.
+    const cardFeeCents = Math.round(taxableCents * 0.035);
     return {
       complete: true,
       lettersSubtotalCents,
@@ -438,7 +439,7 @@ Delivery Fee: ${deliveryDisplay(pricing)}
 Rental Subtotal: ${money(pricing.lettersSubtotalCents)}
 Delivery Fee: ${deliveryDisplay(pricing)}
 Est. Tax (8.9%): ${summaryValue(pricing.taxCents)}
-Est. CC Fee (3.5% of subtotal + delivery + tax; excludes deposit): ${summaryValue(pricing.cardFeeCents)}
+Est. CC Fee (3.5% of subtotal + delivery; excludes tax and deposit): ${summaryValue(pricing.cardFeeCents)}
 Refundable Deposit: ${money(pricing.depositCents)} (${deliveryMethod})
 ESTIMATED TOTAL: ${summaryValue(pricing.grandTotalCents)}
 
