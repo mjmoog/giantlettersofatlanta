@@ -17,6 +17,19 @@ document.addEventListener('DOMContentLoaded', () => {
   let distanceRequestId = 0;
   let distanceState = { status: 'idle' };
 
+  const formatLocalDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  const today = new Date();
+  const threeYearsFromToday = new Date(today.getFullYear() + 3, today.getMonth(), today.getDate());
+  form.querySelectorAll('[name="delivery_date"], [name="retrieval_date"]').forEach((input) => {
+    input.min = formatLocalDate(today);
+    input.max = formatLocalDate(threeYearsFromToday);
+  });
+
   function createSubmissionId() {
     if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (character) => {
@@ -88,6 +101,14 @@ document.addEventListener('DOMContentLoaded', () => {
       valid = false;
     }
 
+    const phoneInput = stepElement.querySelector('input[name="phone"]');
+    if (phoneInput && phoneInput.value && !/^[+()\-\.\s0-9]{7,40}$/.test(phoneInput.value)) {
+      const phoneGroup = phoneInput.closest('.form-group');
+      phoneGroup.classList.add('error');
+      phoneGroup.querySelector('.error-msg').textContent = 'Please enter a phone number using digits only (no extensions or letters)';
+      valid = false;
+    }
+
     if (step === 2) {
       const textGroup = rentalText.closest('.form-group');
       const characters = getRentalCharacters(rentalText.value);
@@ -110,6 +131,15 @@ document.addEventListener('DOMContentLoaded', () => {
       if (deliveryDate && deliveryTime && retrievalDate && retrievalTime) {
         const delivery = new Date(`${deliveryDate}T${deliveryTime}`);
         const retrieval = new Date(`${retrievalDate}T${retrievalTime}`);
+        if (delivery <= new Date()) {
+          const dateGroup = form.querySelector('[name="delivery_date"]').closest('.form-group');
+          const timeGroup = form.querySelector('[name="delivery_time"]').closest('.form-group');
+          dateGroup.classList.add('error');
+          timeGroup.classList.add('error');
+          dateGroup.querySelector('.error-msg').textContent = 'Delivery date and time must be in the future';
+          timeGroup.querySelector('.error-msg').textContent = 'Delivery date and time must be in the future';
+          valid = false;
+        }
         if (retrieval <= delivery) {
           const dateGroup = form.querySelector('[name="retrieval_date"]').closest('.form-group');
           const timeGroup = form.querySelector('[name="retrieval_time"]').closest('.form-group');
@@ -535,9 +565,8 @@ NOTE: Availability and submitted details will be reviewed. An invoice with a sec
     }
   });
 
-  // Do not allow past dates in the date pickers.
-  const today = new Date().toISOString().slice(0, 10);
-  form.querySelectorAll('input[type="date"]').forEach((input) => { input.min = today; });
+  // Do not allow past dates in the remaining date pickers.
+  form.querySelectorAll('input[type="date"]').forEach((input) => { input.min = formatLocalDate(today); });
   updatePrice();
   renderDistanceState();
 });
