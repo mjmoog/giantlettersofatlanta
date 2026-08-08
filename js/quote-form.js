@@ -324,15 +324,15 @@ document.addEventListener('DOMContentLoaded', () => {
         distanceMessage.textContent = 'Pickup selected: no delivery mileage fee applies.';
         break;
       case 'loading':
-        distanceMessage.textContent = 'Calculating round-trip driving distance and delivery fee...';
+        distanceMessage.textContent = 'Calculating driving distance and delivery fee...';
         break;
       case 'available': {
         const result = distanceState.data;
-        distanceMessage.textContent = `${result.resolved_address} \u2022 ${result.round_trip_miles.toFixed(2)} round-trip miles \u2022 ${result.tier_name} \u2022 ${money(result.tier_price_cents)}`;
+        distanceMessage.textContent = `${result.resolved_address} \u2022 ${result.one_way_miles.toFixed(2)} miles one way \u2022 ${result.tier_name} \u2022 ${money(result.tier_price_cents)}`;
         break;
       }
       case 'out_of_range':
-        distanceMessage.textContent = `This address is ${distanceState.data.round_trip_miles.toFixed(2)} round-trip miles away and is outside our 80-mile service area. Please choose pickup or call (404) 806-9959.`;
+        distanceMessage.textContent = `This address is ${distanceState.data.one_way_miles.toFixed(2)} miles one way and is outside our 80-mile service area. Please choose pickup or call (404) 806-9959.`;
         break;
       case 'error':
       case 'unavailable':
@@ -384,14 +384,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (distanceState.status === 'available') {
       return {
         resolved: distanceState.data.resolved_address,
-        mileage: `${distanceState.data.round_trip_miles.toFixed(2)} miles round trip`,
+        mileage: `${distanceState.data.one_way_miles.toFixed(2)} miles one way`,
         tier: distanceState.data.tier_name
       };
     }
     if (distanceState.status === 'out_of_range') {
       return {
         resolved: distanceState.data.resolved_address,
-        mileage: `${distanceState.data.round_trip_miles.toFixed(2)} miles round trip`,
+        mileage: `${distanceState.data.one_way_miles.toFixed(2)} miles one way`,
         tier: 'Outside 80-mile service area - please call (404) 806-9959'
       };
     }
@@ -460,7 +460,7 @@ SETUP: ${setup} Event
 DELIVERY METHOD: ${deliveryMethod}
 Delivery / Pickup: ${formatDate(valueOf('delivery_date'))} at ${formatTime(valueOf('delivery_time'))}
 Retrieval / Return: ${formatDate(valueOf('retrieval_date'))} at ${formatTime(valueOf('retrieval_time'))}
-Round-Trip Mileage: ${distance.mileage}
+One-Way Mileage: ${distance.mileage}
 Delivery Tier: ${distance.tier}
 Delivery Fee: ${deliveryDisplay(pricing)}
 
