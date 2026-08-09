@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const subtotalCents = rentalSubtotalCents();
     document.getElementById('pricePerChar').textContent = style === '2D'
       ? '$60 per character'
-      : '$75 per character; 3D K, ? and # are $75';
+      : '$75 per character';
 
     if (characters.length > 0) {
       rentalPreview.style.display = 'block';
@@ -249,9 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('charCount').textContent = characters.length;
       document.getElementById('styleLabel').textContent = style;
       document.getElementById('previewTotal').textContent = (subtotalCents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      document.getElementById('previewPriceNote').textContent = style === '3D' && characters.some((character) => ['K', '?', '#'].includes(character))
-        ? 'Includes Booqable pricing of $90.00 for each 3D K, question mark, and hashtag; other 3D characters are $75.00.'
-        : 'Based on each character\'s current Booqable price; spaces are free.';
+      document.getElementById('previewPriceNote').textContent = 'Based on each character\'s current Booqable price; spaces are free.';
     } else {
       rentalPreview.style.display = 'none';
     }
@@ -413,7 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('revInstagram').textContent = valueOf('instagram') || 'N/A';
     document.getElementById('revStyle').textContent = `${style} Letters`;
     document.getElementById('revLetters').textContent = text;
-    document.getElementById('revPricePerChar').textContent = style === '2D' ? '$60.00 each' : '$75.00 each; 3D K, ? and # are $75.00';
+    document.getElementById('revPricePerChar').textContent = style === '2D' ? '$60.00 each' : '$75.00 each';
     document.getElementById('revCharCount').textContent = characters.length;
     document.getElementById('revEventDateTime').textContent = `${formatDate(valueOf('event_date'))} at ${formatTime(valueOf('event_time'))}`;
     document.getElementById('revVenue').textContent = valueOf('venue_name');
@@ -447,7 +445,7 @@ RENTAL: ${style} Letters
 Text: ${text}
 Characters: ${characters.length}
 Rental Subtotal: ${money(pricing.lettersSubtotalCents)}
-Character Pricing: ${style === '2D' ? '$60.00 each' : '$75.00 each; 3D K, ? and # are $75.00'}
+Character Pricing: ${style === '2D' ? '$60.00 each' : '$75.00 each'}
 
 EVENT: ${formatDate(valueOf('event_date'))} at ${formatTime(valueOf('event_time'))}
 Venue: ${valueOf('venue_name')}
