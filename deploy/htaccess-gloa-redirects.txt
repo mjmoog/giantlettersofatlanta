@@ -1,0 +1,42 @@
+# PROPOSED — REVIEW ONLY; NOT INSTALLED.
+# Legacy WordPress redirects for giantlettersofatlanta.com only.
+# If approved later, place this block before the existing WordPress rewrite block.
+# Query strings are preserved by default so campaign attribution (for example,
+# ?utm_source=rss) is not discarded during a redirect.
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Blog posts whose slugs are unchanged in the static rebuild.
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteCond %{DOCUMENT_ROOT}/blog/$1.html -f
+RewriteRule ^(5-reasons-to-rent-giant-letters-for-your-next-event|large-letter-rentals|history-of-st-patrick|vendor-shout-out-bomb-babes|the-benefits-of-customizing-your-giant-letter-rental|make-your-graduation-party-shine-with-giant-marquee-letters|5ft-tall-vs-4ft-tall-marquee-numbers|places-unforgettable-events-in-atlanta-ga|10-unique-ways-to-use-giant-illuminated-letters-at-your-wedding|7-last-minute-valentines-days-gift-ideas|make-a-statement-with-giant-marquee-letters|marry-me-vs-marry-me-that-is-the-question)/?$ /blog/$1.html [R=301,L]
+
+# Blog posts whose slugs were shortened in the static rebuild.
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^giant-letters-for-every-occasion-a-roundup-of-our-most-popular-rentals/?$ /blog/giant-letters-for-every-occasion.html [R=301,L]
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^before-and-after-transform-your-event-with-giant-letter-rentals/?$ /blog/before-and-after-transform-your-event.html [R=301,L]
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^giant-letters-for-corporate-events-making-a-big-impact/?$ /blog/giant-letters-for-corporate-events.html [R=301,L]
+
+# Pages that moved in the static rebuild.
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^our-story/?$ /our-story.html [R=301,L]
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^contact-us/?$ /contact.html [R=301,L]
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^pricing-and-payment/?$ /rental-info.html [R=301,L]
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^rental-form/?$ /get-a-quote.html [R=301,L]
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^freequote/?$ /get-a-quote.html [R=301,L]
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^are-you-a-planner/?$ /resources.html [R=301,L]
+
+# WordPress tag and date archives have no direct static equivalent.
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^tag/ /blog/ [R=301,L]
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^[0-9]{4}/[0-9]{2}/[0-9]{2}/?$ /blog/ [R=301,L]
+</IfModule>
