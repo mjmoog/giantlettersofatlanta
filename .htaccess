@@ -1,0 +1,120 @@
+# BEGIN GLOA LEGACY URL REDIRECTS
+# Host-scoped redirects for giantlettersofatlanta.com only.
+# Keep this block before the WordPress catch-all rules below.
+<IfModule mod_rewrite.c>
+# Blog posts whose slugs are unchanged in the static rebuild.
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteCond %{DOCUMENT_ROOT}/blog/$1.html -f
+RewriteRule ^(5-reasons-to-rent-giant-letters-for-your-next-event|large-letter-rentals|history-of-st-patrick|vendor-shout-out-bomb-babes|the-benefits-of-customizing-your-giant-letter-rental|make-your-graduation-party-shine-with-giant-marquee-letters|5ft-tall-vs-4ft-tall-marquee-numbers|places-unforgettable-events-in-atlanta-ga|10-unique-ways-to-use-giant-illuminated-letters-at-your-wedding|7-last-minute-valentines-days-gift-ideas|make-a-statement-with-giant-marquee-letters|marry-me-vs-marry-me-that-is-the-question)/?$ /blog/$1.html [R=301,L]
+
+# Blog posts whose slugs were shortened in the static rebuild.
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^giant-letters-for-every-occasion-a-roundup-of-our-most-popular-rentals/?$ /blog/giant-letters-for-every-occasion.html [R=301,L]
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^before-and-after-transform-your-event-with-giant-letter-rentals/?$ /blog/before-and-after-transform-your-event.html [R=301,L]
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^giant-letters-for-corporate-events-making-a-big-impact/?$ /blog/giant-letters-for-corporate-events.html [R=301,L]
+
+# Pages that moved in the static rebuild.
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^our-story/?$ /our-story.html [R=301,L]
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^contact-us/?$ /contact.html [R=301,L]
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^pricing-and-payment/?$ /rental-info.html [R=301,L]
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^rental-form/?$ /get-a-quote.html [R=301,L]
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^freequote/?$ /get-a-quote.html [R=301,L]
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^are-you-a-planner/?$ /resources.html [R=301,L]
+
+# WordPress tag and date archives have no direct static equivalent.
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^tag/ /blog/ [R=301,L]
+RewriteCond %{HTTP_HOST} ^(?:www\.)?giantlettersofatlanta\.com$ [NC]
+RewriteRule ^[0-9]{4}/[0-9]{2}/[0-9]{2}/?$ /blog/ [R=301,L]
+</IfModule>
+# END GLOA LEGACY URL REDIRECTS
+
+# BEGIN WordPress
+# The directives (lines) between "BEGIN WordPress" and "END WordPress" are
+# dynamically generated, and should only be modified via WordPress filters.
+# Any changes to the directives between these markers will be overwritten.
+<IfModule mod_expires.c>
+	ExpiresActive On
+	ExpiresByType image/jpg "access plus 24 hours"
+	ExpiresByType image/jpeg "access plus 24 hours"
+	ExpiresByType image/gif "access plus 24 hours"
+	ExpiresByType image/png "access plus 24 hours"
+	ExpiresByType text/css "access plus 24 hours"
+	ExpiresByType application/pdf "access plus 1 week"
+	ExpiresByType text/javascript "access plus 24 hours"
+	ExpiresByType text/html "access plus 5 minutes"
+	ExpiresByType image/x-icon "access plus 1 year"
+	ExpiresDefault "access plus 24 hours"
+</IfModule>
+Options -Indexes
+<IfModule mod_headers.c>
+	Header set X-Endurance-Cache-Level "2"
+	Header set X-nginx-cache "WordPress"
+</IfModule>
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+# NFD PATCH nfd.skip404.static BEGIN
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !(robots\.txt|ads\.txt|[a-z0-9_\-]*sitemap[a-z0-9_\.\-]*\.(xml|xsl|html)(\.gz)?)
+RewriteCond %{REQUEST_URI} \.(css|htc|less|js|js2|js3|js4|html|htm|rtf|rtx|txt|xsd|xsl|xml|asf|asx|wax|wmv|wmx|avi|avif|avifs|bmp|class|divx|doc|docx|eot|exe|gif|gz|gzip|ico|jpg|jpeg|jpe|webp|json|mdb|mid|midi|mov|qt|mp3|m4a|mp4|m4v|mpeg|mpg|mpe|webm|mpp|otf|_otf|odb|odc|odf|odg|odp|ods|odt|ogg|ogv|pdf|png|pot|pps|ppt|pptx|ra|ram|svg|svgz|swf|tar|tif|tiff|ttf|ttc|_ttf|wav|wma|wri|woff|woff2|xla|xls|xlsx|xlt|xlw|zip)$ [NC]
+RewriteRule .* - [L]
+# NFD PATCH nfd.skip404.static END
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+# END WordPress
+# BEGIN NFD Htaccess
+# Managed by Newfold Htaccess Manager v1.0.0 (giantlettersofatlanta.com)
+# STATE sha256: c24da795108d7034d0ec2553e9c817d90460524ac17b93877647f70f9e9948fc applied: 2025-09-19T03:59:54Z
+
+# BEGIN Newfold CF Optimization Header
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	# Skip setting for admin/API routes
+	RewriteCond %{REQUEST_URI} !/wp-admin/       [NC]
+	RewriteCond %{REQUEST_URI} !/wp-login\.php   [NC]
+	RewriteCond %{REQUEST_URI} !/wp-json/        [NC]
+	RewriteCond %{REQUEST_URI} !/xmlrpc\.php     [NC]
+	RewriteCond %{REQUEST_URI} !/admin-ajax\.php [NC]
+	# Skip if the exact cookie and value are already present
+	RewriteCond %{HTTP_COOKIE} !(^|;\s*)nfd\-enable\-cf\-opt\=63a6825d27cab0f204d3b602 [NC]
+	# Set env var if we passed all conditions
+	RewriteRule .* - [E=CF_OPT:1]
+</IfModule>
+<IfModule mod_headers.c>
+	# Set cookie only if env var is present (i.e., exact cookie not found)
+	Header set Set-Cookie "nfd-enable-cf-opt=63a6825d27cab0f204d3b602; path=/; Max-Age=86400; HttpOnly" env=CF_OPT
+</IfModule>
+# END Newfold CF Optimization Header
+
+# BEGIN Newfold Skip 404 Handling for Static Files
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_URI} !(robots\.txt|ads\.txt|[a-z0-9_\-]*sitemap[a-z0-9_\.\-]*\.(xml|xsl|html)(\.gz)?)
+	RewriteCond %{REQUEST_URI} \.(css|htc|less|js|js2|js3|js4|html|htm|rtf|rtx|txt|xsd|xsl|xml|asf|asx|wax|wmv|wmx|avi|avif|avifs|bmp|class|divx|doc|docx|eot|exe|gif|gz|gzip|ico|jpg|jpeg|jpe|webp|json|mdb|mid|midi|mov|qt|mp3|m4a|mp4|m4v|mpeg|mpg|mpe|webm|mpp|otf|_otf|odb|odc|odf|odg|odp|ods|odt|ogg|ogv|pdf|png|pot|pps|ppt|pptx|ra|ram|svg|svgz|swf|tar|tif|tiff|ttf|ttc|_ttf|wav|wma|wri|woff|woff2|xla|xls|xlsx|xlt|xlw|zip)$ [NC]
+	RewriteRule .* - [L]
+</IfModule>
+# END Newfold Skip 404 Handling for Static Files
+# END NFD Htaccess
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php82” package as the default “PHP” programming language.
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php82___lsphp .php .php8 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit
